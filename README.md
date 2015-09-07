@@ -1,5 +1,5 @@
 # vcache
-A cache middleware using redis. Support version cotroller.
+A cache middleware using redis. Support version control.
 
 When we change some content and want to update all pages's cache, it is hard work to do that in normal way. So we can use cache version to control the cache key. So this lib is a implement by go.
 
