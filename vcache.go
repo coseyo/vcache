@@ -9,9 +9,13 @@ import (
 	"github.com/coseyo/vcache/util"
 )
 
+var (
+	GlobalKeyPrefix string
+)
+
 type VCache struct {
-	KeyPrefix string
-	Expire    int
+	KeyPrefix    string
+	ExpireSecond int
 
 	versionKey string
 }
@@ -21,7 +25,15 @@ func Init(network, addr string, size int) (*VCache, error) {
 	if err := initPool(network, addr, size); err != nil {
 		return nil, err
 	}
-	return &VCache{Expire: 3600}, nil
+	return &VCache{}, nil
+}
+
+// new a VCache instance, thread safe
+func New(keyPrefix string, expireSecond int) *VCache {
+	instance := new(VCache)
+	instance.KeyPrefix = keyPrefix
+	instance.ExpireSecond = expireSecond
+	return instance
 }
 
 // get cache data by key
@@ -41,7 +53,7 @@ func (this *VCache) Set(key string, value interface{}) error {
 	if err != nil {
 		return err
 	}
-	expire(key, this.Expire)
+	expire(key, this.ExpireSecond)
 	return set(key, data)
 }
 
@@ -95,7 +107,7 @@ func (this *VCache) GenerateKey(params map[string]interface{}, prefix ...string)
 }
 
 func (this *VCache) getKey(key string) string {
-	return fmt.Sprintf("%s:%s", this.KeyPrefix, util.MD5(key))
+	return fmt.Sprintf("%s:%s:%s", GlobalKeyPrefix, this.KeyPrefix, util.MD5(key))
 }
 
 func (this *VCache) getKeyWithVersionNum(key string) string {
