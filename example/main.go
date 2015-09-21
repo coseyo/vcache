@@ -7,13 +7,16 @@ import (
 )
 
 func main() {
-	cache, err := vcache.Init("tcp", "127.0.0.1:11311", 30)
+	_, err := vcache.Init("tcp", "127.0.0.1:11311", 30)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	cache.KeyPrefix = "testPrefix"
+	vcache.GlobalKeyPrefix = "globalVcache8"
+
+	cache := vcache.New("test", 900)
+	cache2 := vcache.New("test", 900)
 
 	// versionParams is  use to generate the version key, not including the page param
 	versionParams := map[string]interface{}{
@@ -36,9 +39,8 @@ func main() {
 	}
 
 	// set version key
-	if err := cache.SetVersionKey(versionParams); err != nil {
-		fmt.Println(err)
-	}
+	cache.SetVersionKey(versionParams)
+	cache2.SetVersionKey(versionParams)
 
 	// generate key by params
 	keya := cache.GenerateKey(a, "prefix_aa", "prefix_aa_2")
@@ -62,10 +64,13 @@ func main() {
 	// The editor change some content, want to refresh the page 1
 	// and page 2 immediately, may be much more pages.
 	// And just execute the IncrVersionNum() method, the cache will be deprecated
-	cache.IncrVersionNum()
+	//	cache.IncrVersionNum()
+	cache2.IncrVersionNum()
 
 	// because the version num was changed, the data is null
 	value, _ = cache.Get(keya)
+	fmt.Println(value)
+	value, _ = cache2.Get(keya)
 	fmt.Println(value)
 	value, _ = cache.Get(keyb)
 	fmt.Println(value)
