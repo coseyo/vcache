@@ -36,9 +36,9 @@ func New(keyPrefix string, expireSecond int) *VCache {
 // get cache data by key
 func (this *VCache) Get(key string) (interface{}, error) {
 	key = this.getKeyWithVersionNum(key)
-	data, err := get(key)
-	if err != nil {
-		return nil, err
+	data, _ := get(key)
+	if data == "" {
+		return nil, nil
 	}
 	return util.JsonDecode(data)
 }
@@ -76,8 +76,9 @@ func (this *VCache) getVersionNum() string {
 
 // set version key according to the params, the params should not including the
 // unnecessary params,  like the page, offset
-func (this *VCache) SetVersionKey(params map[string]interface{}) {
+func (this *VCache) SetVersionKey(params map[string]interface{}) *VCache {
 	this.versionKey = this.GenerateKey(params)
+	return this
 }
 
 // generate key by params
