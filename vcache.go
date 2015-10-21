@@ -17,14 +17,6 @@ type VCache struct {
 	versionKey string
 }
 
-// init with redis config and return the struct instance, and set default expire time
-func Init(network, addr string, size int) (*VCache, error) {
-	if err := initPool(network, addr, size); err != nil {
-		return nil, err
-	}
-	return &VCache{}, nil
-}
-
 // new a VCache instance, thread safe
 func New(keyPrefix string, expireSecond int) *VCache {
 	instance := new(VCache)

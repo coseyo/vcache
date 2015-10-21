@@ -1,43 +1,38 @@
 package vcache
 
-import "github.com/fzzy/radix/extra/pool"
+import (
+	"time"
 
-var (
-	redisPool *pool.Pool
+	"github.com/coseyo/radixpool"
 )
 
-func initPool(network, addr string, size int) error {
+var (
+	redisPool *radixpool.Pool
+)
+
+// init redis config
+func InitRedis(network, addr string, size int, clientTimeout time.Duration) error {
 	var err error
-	redisPool, err = pool.NewPool(network, addr, size)
+	redisPool, err = radixpool.NewPool(network, addr, size, clientTimeout)
 	return err
 }
 
 func get(key string) (string, error) {
-	client, redisErr := redisPool.Get()
-	defer redisPool.CarefullyPut(client, &redisErr)
-	return client.Cmd("GET", key).Str()
+	return redisPool.Cmd("GET", key).Str()
 }
 
 func set(key, value string) error {
-	client, redisErr := redisPool.Get()
-	defer redisPool.CarefullyPut(client, &redisErr)
-	return client.Cmd("SET", key, value).Err
+	return redisPool.Cmd("SET", key, value).Err
 }
 
 func del(key string) error {
-	client, redisErr := redisPool.Get()
-	defer redisPool.CarefullyPut(client, &redisErr)
-	return client.Cmd("DEL", key).Err
+	return redisPool.Cmd("DEL", key).Err
 }
 
 func expire(key string, seconds int) error {
-	client, redisErr := redisPool.Get()
-	defer redisPool.CarefullyPut(client, &redisErr)
-	return client.Cmd("EXPIRE", key, seconds).Err
+	return redisPool.Cmd("EXPIRE", key, seconds).Err
 }
 
 func incr(key string) (int, error) {
-	client, redisErr := redisPool.Get()
-	defer redisPool.CarefullyPut(client, &redisErr)
-	return client.Cmd("INCR", key).Int()
+	return redisPool.Cmd("INCR", key).Int()
 }
