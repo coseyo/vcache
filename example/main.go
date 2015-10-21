@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/coseyo/vcache"
 )
 
 func main() {
-	_, err := vcache.InitRedis("tcp", "127.0.0.1:11311", 30)
+	err := vcache.InitRedis("tcp", "127.0.0.1:11311", 30, 900*time.Second)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -16,7 +17,6 @@ func main() {
 	vcache.GlobalKeyPrefix = "globalVcache8"
 
 	cache := vcache.New("test", 900)
-	cache2 := vcache.New("test", 900)
 
 	// versionParams is  use to generate the version key, not including the page param
 	versionParams := map[string]interface{}{
@@ -40,7 +40,6 @@ func main() {
 
 	// set version key
 	cache.SetVersionKey(versionParams)
-	cache2.SetVersionKey(versionParams)
 
 	// generate key by params
 	keya := cache.GenerateKey(a, "prefix_aa", "prefix_aa_2")
@@ -64,14 +63,11 @@ func main() {
 	// The editor change some content, want to refresh the page 1
 	// and page 2 immediately, may be much more pages.
 	// And just execute the IncrVersionNum() method, the cache will be deprecated
-	//	cache.IncrVersionNum()
-	cache2.IncrVersionNum()
+	cache.IncrVersionNum()
 
 	// because the version num was changed, the data is null
 	value, _ = cache.Get(keya)
-	fmt.Println(value)
-	value, _ = cache2.Get(keya)
-	fmt.Println(value)
-	value, _ = cache.Get(keyb)
-	fmt.Println(value)
+	fmt.Println("11", value)
+	value, _ = cache.Get(keya)
+	fmt.Println("22", value)
 }

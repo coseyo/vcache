@@ -51,6 +51,16 @@ func (this *VCache) Del(key string) error {
 	return del(this.getKeyWithVersionNum(key))
 }
 
+// incr cache data
+func (this *VCache) Incr(key string) (int, error) {
+	return incr(this.getKeyWithVersionNum(key))
+}
+
+// set expireTime cache data
+func (this *VCache) Expire(key string, expireSecond int) error {
+	return expire(this.getKeyWithVersionNum(key), expireSecond)
+}
+
 // increase cache version num
 func (this *VCache) IncrVersionNum() error {
 	_, err := incr(this.getKey(this.versionKey))
