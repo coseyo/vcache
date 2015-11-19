@@ -36,3 +36,7 @@ func expire(key string, seconds int) error {
 func incr(key string) (int, error) {
 	return redisPool.Cmd("INCR", key).Int()
 }
+
+func decr(key string) (int, error) {
+	return redisPool.Cmd("DECR", key).Int()
+}
