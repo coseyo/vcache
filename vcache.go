@@ -43,8 +43,7 @@ func (this *VCache) Set(key string, value interface{}) error {
 	if err != nil {
 		return err
 	}
-	expire(key, this.ExpireSecond)
-	return set(key, data)
+	return setex(key, this.ExpireSecond, data)
 }
 
 // delete cache data

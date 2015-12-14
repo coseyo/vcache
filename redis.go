@@ -25,6 +25,10 @@ func set(key, value string) error {
 	return redisPool.Cmd("SET", key, value).Err
 }
 
+func setex(key string, seconds int, value string) error {
+	return redisPool.Cmd("SETEX", key, seconds, value).Err
+}
+
 func del(key string) error {
 	return redisPool.Cmd("DEL", key).Err
 }
