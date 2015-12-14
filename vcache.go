@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	GlobalKeyPrefix string
+	GlobalKeyPrefix         string
+	DefaultVersionKeyExpire int = 7200
 )
 
 type VCache struct {
@@ -68,7 +69,11 @@ func (this *VCache) Expire(key string, expireSecond int) error {
 
 // increase cache version num
 func (this *VCache) IncrVersionNum() error {
-	_, err := incr(this.getKey(this.versionKey))
+	key := this.getKey(this.versionKey)
+	_, err := incr(key)
+	if err == nil {
+		expire(key, DefaultVersionKeyExpire)
+	}
 	return err
 }
 
