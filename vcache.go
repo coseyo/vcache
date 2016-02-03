@@ -3,6 +3,7 @@ package vcache
 import (
 	"fmt"
 
+	"github.com/coseyo/goutil/sortmap"
 	"github.com/coseyo/vcache/util"
 )
 
@@ -94,14 +95,7 @@ func (this *VCache) SetVersionKey(params map[string]interface{}) *VCache {
 
 // generate key by params
 func (this *VCache) GenerateKey(params map[string]interface{}, prefix ...string) string {
-	var sm util.SortedMaps
-	sortedParams := sm.Sort(params)
-	jsonString, _ := util.JsonEncode(sortedParams)
-	key := jsonString
-	for _, v := range prefix {
-		key = v + key
-	}
-	return key
+	return sortmap.MapToMD5String(params)
 }
 
 func (this *VCache) getKey(key string) string {
