@@ -95,7 +95,11 @@ func (this *VCache) SetVersionKey(params map[string]interface{}) *VCache {
 
 // generate key by params
 func (this *VCache) GenerateKey(params map[string]interface{}, prefix ...string) string {
-	return sortmap.MapToMD5String(params)
+	key := sortmap.MapToMD5String(params)
+	for _, v := range prefix {
+		key = v + key
+	}
+	return key
 }
 
 func (this *VCache) getKey(key string) string {
