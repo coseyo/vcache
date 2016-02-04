@@ -21,7 +21,6 @@ func main() {
 	// versionParams is  use to generate the version key, not including the page param
 	versionParams := map[string]interface{}{
 		"username": "test1",
-		"state":    1,
 	}
 
 	// get page 1 on specific condition
@@ -56,9 +55,9 @@ func main() {
 
 	// test the cache data
 	value, _ := cache.Get(keya)
-	fmt.Println(value)
+	fmt.Println("keya vaule is", value)
 	value, _ = cache.Get(keyb)
-	fmt.Println(value)
+	fmt.Println("keyb vaule is", value)
 
 	// The editor change some content, want to refresh the page 1
 	// and page 2 immediately, may be much more pages.
@@ -67,7 +66,7 @@ func main() {
 
 	// because the version num was changed, the data is null
 	value, _ = cache.Get(keya)
-	fmt.Println("11", value)
-	value, _ = cache.Get(keya)
-	fmt.Println("22", value)
+	fmt.Println("keya vaule is", value)
+	value, _ = cache.Get(keyb)
+	fmt.Println("keyb value is", value)
 }
