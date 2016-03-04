@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := vcache.InitRedis("tcp", "127.0.0.1:11311", 30, 900*time.Second)
+	err := vcache.InitRedis("tcp", "10.20.187.251:11311", 30, 900*time.Second)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -69,4 +69,16 @@ func main() {
 	fmt.Println("keya vaule is", value)
 	value, _ = cache.Get(keyb)
 	fmt.Println("keyb value is", value)
+
+	// lock use
+	ok, err := cache.Lock("aa", 30, 20)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("one", ok)
+
+	ok, _ = cache.Lock("aa", 10, 20)
+
+	fmt.Println("two", ok)
 }
