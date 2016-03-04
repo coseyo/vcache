@@ -71,7 +71,7 @@ func main() {
 	fmt.Println("keyb value is", value)
 
 	// lock use
-	ok, err := cache.Lock("aa", 30, 20)
+	ok, err := cache.Lock("aa", 10, 20)
 	if err != nil {
 		fmt.Println(err)
 	}
