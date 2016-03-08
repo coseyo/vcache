@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const LOCK_PREFIX = "lock:"
+
 // Lock will lock the key in lockSecond secoend and expire in expireSecond
 func (this *VCache) Lock(key string, lockSecond, expireSecond int) (ok bool, err error) {
 	rc, err := redisPool.Get()
@@ -18,7 +20,7 @@ func (this *VCache) Lock(key string, lockSecond, expireSecond int) (ok bool, err
 		return
 	}
 
-	key = this.getKey(key)
+	key = this.getKey(LOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	expireTime := curTime + lockSecond + 1
 
@@ -52,7 +54,7 @@ func (this *VCache) UnLock(key string) (err error) {
 	}
 	defer redisPool.CarefullyPut(rc, &err)
 
-	key = this.getKey(key)
+	key = this.getKey(LOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	lockTime, err := rc.Conn.Cmd("GET", key).Int()
 	if err != nil || lockTime == 0 {
