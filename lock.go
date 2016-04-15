@@ -101,10 +101,6 @@ func (this *VCache) UnSLock(key string) (err error) {
 	defer redisPool.CarefullyPut(rc, &err)
 
 	key = this.getKey(SLOCK_PREFIX + key)
-	lockTime, err := rc.Conn.Cmd("GET", key).Int()
-	if err != nil || lockTime == 0 {
-		return
-	}
 	err = rc.Conn.Cmd("DEL", key).Err
 	return
 }
