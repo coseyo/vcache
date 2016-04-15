@@ -5,7 +5,10 @@ import (
 	"time"
 )
 
-const LOCK_PREFIX = "lock:"
+const (
+	CLOCK_PREFIX = "clock:"
+	SLOCK_PREFIX = "slock:"
+)
 
 // CLock is a concurrent lock, it will lock the key in lockSecond secoend and expire in expireSecond
 // When CLock the same key in lockSecond, it will extend the lock time to keep it exclusive in concurrent env.
@@ -21,7 +24,7 @@ func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, er
 		return
 	}
 
-	key = this.getKey(LOCK_PREFIX + key)
+	key = this.getKey(CLOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	expireTime := curTime + lockSecond + 1
 
@@ -49,16 +52,35 @@ func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, er
 
 // SLock is a sequencial lock, it will lock the key in lockSecond, just like a normal lock.
 func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
-
-// unlock will unlock the key
-func (this *VCache) UnLock(key string) (err error) {
 	rc, err := redisPool.Get()
 	if err != nil {
 		return
 	}
 	defer redisPool.CarefullyPut(rc, &err)
 
-	key = this.getKey(LOCK_PREFIX + key)
+	key = this.getKey(SLOCK_PREFIX + key)
+	rs, err := rc.Conn.Cmd("SETNX", key, 1).Int()
+	if err != nil {
+		return
+	}
+
+	if rs == 1 {
+		err = rc.Conn.Cmd("EXPIRE", key, lockSecond).Err
+		ok = true
+	}
+
+	return
+}
+
+// UnCLock will unlock CLock
+func (this *VCache) UnCLock(key string) (err error) {
+	rc, err := redisPool.Get()
+	if err != nil {
+		return
+	}
+	defer redisPool.CarefullyPut(rc, &err)
+
+	key = this.getKey(CLOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	lockTime, err := rc.Conn.Cmd("GET", key).Int()
 	if err != nil || lockTime == 0 {
@@ -67,5 +89,22 @@ func (this *VCache) UnLock(key string) (err error) {
 	if curTime < lockTime {
 		err = rc.Conn.Cmd("DEL", key).Err
 	}
+	return
+}
+
+// UnSLock will unlock SLock
+func (this *VCache) UnSLock(key string) (err error) {
+	rc, err := redisPool.Get()
+	if err != nil {
+		return
+	}
+	defer redisPool.CarefullyPut(rc, &err)
+
+	key = this.getKey(SLOCK_PREFIX + key)
+	lockTime, err := rc.Conn.Cmd("GET", key).Int()
+	if err != nil || lockTime == 0 {
+		return
+	}
+	err = rc.Conn.Cmd("DEL", key).Err
 	return
 }
