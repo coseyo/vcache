@@ -7,8 +7,9 @@ import (
 
 const LOCK_PREFIX = "lock:"
 
-// Lock will lock the key in lockSecond secoend and expire in expireSecond
-func (this *VCache) Lock(key string, lockSecond, expireSecond int) (ok bool, err error) {
+// CLock is a concurrent lock, it will lock the key in lockSecond secoend and expire in expireSecond
+// When CLock the same key in lockSecond, it will extend the lock time to keep it exclusive in concurrent env.
+func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, err error) {
 	rc, err := redisPool.Get()
 	if err != nil {
 		return
@@ -45,6 +46,9 @@ func (this *VCache) Lock(key string, lockSecond, expireSecond int) (ok bool, err
 
 	return
 }
+
+// SLock is a sequencial lock, it will lock the key in lockSecond, just like a normal lock.
+func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
 
 // unlock will unlock the key
 func (this *VCache) UnLock(key string) (err error) {
