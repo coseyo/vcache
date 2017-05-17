@@ -13,11 +13,11 @@ const (
 // CLock is a concurrent lock, it will lock the key in lockSecond secoend and expire in expireSecond
 // When CLock the same key in lockSecond, it will extend the lock time to keep it exclusive in concurrent env.
 func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, err error) {
-	rc, err := redisPool.Get()
+	rc, err := RedisPool.Get()
 	if err != nil {
 		return
 	}
-	defer redisPool.CarefullyPut(rc, &err)
+	defer RedisPool.CarefullyPut(rc, &err)
 
 	if lockSecond > expireSecond {
 		err = errors.New("lockedSecond should not greater than expireSecond")
@@ -52,11 +52,11 @@ func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, er
 
 // SLock is a sequencial lock, it will lock the key in lockSecond, just like a normal lock.
 func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
-	rc, err := redisPool.Get()
+	rc, err := RedisPool.Get()
 	if err != nil {
 		return
 	}
-	defer redisPool.CarefullyPut(rc, &err)
+	defer RedisPool.CarefullyPut(rc, &err)
 
 	key = this.getKey(SLOCK_PREFIX + key)
 	rs, err := rc.Conn.Cmd("SETNX", key, 1).Int()
@@ -74,11 +74,11 @@ func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
 
 // UnCLock will unlock CLock
 func (this *VCache) UnCLock(key string) (err error) {
-	rc, err := redisPool.Get()
+	rc, err := RedisPool.Get()
 	if err != nil {
 		return
 	}
-	defer redisPool.CarefullyPut(rc, &err)
+	defer RedisPool.CarefullyPut(rc, &err)
 
 	key = this.getKey(CLOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
@@ -94,11 +94,11 @@ func (this *VCache) UnCLock(key string) (err error) {
 
 // UnSLock will unlock SLock
 func (this *VCache) UnSLock(key string) (err error) {
-	rc, err := redisPool.Get()
+	rc, err := RedisPool.Get()
 	if err != nil {
 		return
 	}
-	defer redisPool.CarefullyPut(rc, &err)
+	defer RedisPool.CarefullyPut(rc, &err)
 
 	key = this.getKey(SLOCK_PREFIX + key)
 	err = rc.Conn.Cmd("DEL", key).Err
