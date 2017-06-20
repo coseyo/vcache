@@ -40,8 +40,7 @@ func (this *VCache) Get(key string) (interface{}, error) {
 // get cache data string by key
 func (this *VCache) GetString(key string) (string, error) {
 	key = this.getKeyWithVersionNum(key)
-	data, err := get(key)
-	return data, err
+	return get(key)
 }
 
 // set cache data
