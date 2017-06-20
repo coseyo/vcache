@@ -30,11 +30,18 @@ func New(keyPrefix string, expireSecond int) *VCache {
 // get cache data by key
 func (this *VCache) Get(key string) (interface{}, error) {
 	key = this.getKeyWithVersionNum(key)
-	data, _ := get(key)
+	data, err := get(key)
 	if data == "" {
-		return nil, nil
+		return nil, err
 	}
 	return util.JsonDecode(data)
+}
+
+// get cache data string by key
+func (this *VCache) GetString(key string) (string, error) {
+	key = this.getKeyWithVersionNum(key)
+	data, err := get(key)
+	return data, err
 }
 
 // set cache data
