@@ -6,6 +6,10 @@ import (
 	"github.com/coseyo/radixpool"
 )
 
+const (
+	radixErrEmpty = "string value is not available for this reply type"
+)
+
 var (
 	RedisPool *radixpool.Pool
 )
@@ -17,8 +21,12 @@ func InitRedis(network, addr string, size int, clientTimeout time.Duration) erro
 	return err
 }
 
-func get(key string) (string, error) {
-	return RedisPool.Cmd("GET", key).Str()
+func get(key string) (str string, err error) {
+	str, err = RedisPool.Cmd("GET", key).Str()
+	if err != nil && err.Error() == radixErrEmpty {
+		err = nil
+	}
+	return
 }
 
 func set(key, value string) error {
