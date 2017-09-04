@@ -1,6 +1,7 @@
 package vcache
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/coseyo/goutil/sortmap"
@@ -41,6 +42,17 @@ func (this *VCache) Get(key string) (interface{}, error) {
 func (this *VCache) GetString(key string) (string, error) {
 	key = this.getKeyWithVersionNum(key)
 	return get(key)
+}
+
+// GetByType
+func (this *VCache) GetByType(key string, v interface{}) (err error) {
+	key = this.getKeyWithVersionNum(key)
+	str, err := get(key)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(str), v)
+	return
 }
 
 // set cache data
