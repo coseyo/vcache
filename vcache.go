@@ -48,7 +48,7 @@ func (this *VCache) GetString(key string) (string, error) {
 func (this *VCache) GetByType(key string, v interface{}) (err error) {
 	key = this.getKeyWithVersionNum(key)
 	str, err := get(key)
-	if err != nil {
+	if err != nil || str == "" {
 		return
 	}
 	err = json.Unmarshal([]byte(str), v)
