@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"errors"
+
 	"github.com/coseyo/goutil/sortmap"
 	"github.com/coseyo/vcache/util"
 )
@@ -44,11 +46,15 @@ func (this *VCache) GetString(key string) (string, error) {
 	return get(key)
 }
 
-// GetByType
+// GetByType empty cache will return error
 func (this *VCache) GetByType(key string, v interface{}) (err error) {
 	key = this.getKeyWithVersionNum(key)
 	str, err := get(key)
-	if err != nil || str == "" {
+	if err != nil {
+		return
+	}
+	if str == "" {
+		err = errors.New("CACHE_EMPTY")
 		return
 	}
 	err = json.Unmarshal([]byte(str), v)
