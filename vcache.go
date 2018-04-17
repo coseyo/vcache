@@ -71,6 +71,16 @@ func (this *VCache) Set(key string, value interface{}) error {
 	return setex(key, this.ExpireSecond, data)
 }
 
+// set cache data with expire second
+func (this *VCache) SetWithExpire(key string, value interface{}, expireSecond int) error {
+	key = this.getKeyWithVersionNum(key)
+	data, err := util.JsonEncode(value)
+	if err != nil {
+		return err
+	}
+	return setex(key, expireSecond, data)
+}
+
 // delete cache data
 func (this *VCache) Del(key string) error {
 	return del(this.getKeyWithVersionNum(key))
