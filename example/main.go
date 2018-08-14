@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	"log"
+	"sync"
+
 	"github.com/coseyo/vcache"
 )
 
 func main() {
-	err := vcache.InitRedis("tcp", "10.20.187.251:11311", 30, 900*time.Second)
+	err := vcache.InitRedis("tcp", "10.13.88.102:11311", 30, 900*time.Second)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -70,15 +73,34 @@ func main() {
 	value, _ = cache.Get(keyb)
 	fmt.Println("keyb value is", value)
 
-	// lock use
-	ok, err := cache.Lock("aa", 10, 20)
-	if err != nil {
-		fmt.Println(err)
+	//bb, _ := vcache.RedisPool.Cmd("SETNX", "BB", 1).Int()
+	//log.Println("bb", bb)
+	//
+	//bb2, _ := vcache.RedisPool.Cmd("GET", "BB").Int()
+	//log.Println("bb2", bb2)
+	//
+	//bb, _ = vcache.RedisPool.Cmd("SETNX", "BB", 2).Int()
+	//log.Println("bb", bb)
+	//
+	//bb2, _ = vcache.RedisPool.Cmd("GET", "BB").Int()
+	//log.Println("bb2", bb2)
+
+	//lock use
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go func() {
+			ok, err := cache.SLock("dasddsda", 100)
+			if ok {
+				fmt.Println(i, ok, err, "========================", time.Now().Unix())
+			}
+			wg.Done()
+		}()
 	}
 
-	fmt.Println("one", ok)
+	wg.Wait()
 
-	ok, _ = cache.Lock("aa", 10, 20)
-
-	fmt.Println("two", ok)
+	log.Println("finish")
 }

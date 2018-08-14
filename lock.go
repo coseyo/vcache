@@ -41,8 +41,9 @@ func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, er
 
 	lockTime, _ := rc.Conn.Cmd("GET", key).Int()
 	oldLockTime, _ := rc.Conn.Cmd("GETSET", key, expireTime).Int()
+	rc.Conn.Cmd("EXPIRE", key, expireSecond)
+
 	if curTime > lockTime && curTime > oldLockTime {
-		err = rc.Conn.Cmd("EXPIRE", key, expireSecond).Err
 		ok = true
 		return
 	}
