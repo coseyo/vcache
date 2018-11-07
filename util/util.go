@@ -3,7 +3,8 @@ package util
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
+
+	"github.com/json-iterator/go"
 )
 
 func MD5(str string) string {
@@ -14,6 +15,7 @@ func MD5(str string) string {
 }
 
 func JsonDecode(data string) (interface{}, error) {
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	bytes := []byte(data)
 	var m interface{}
 	err := json.Unmarshal(bytes, &m)
@@ -21,6 +23,7 @@ func JsonDecode(data string) (interface{}, error) {
 }
 
 func JsonEncode(m interface{}) (string, error) {
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	rs, err := json.Marshal(m)
 	if err != nil {
 		return "", err

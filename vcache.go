@@ -1,8 +1,9 @@
 package vcache
 
 import (
-	"encoding/json"
 	"fmt"
+
+	"github.com/json-iterator/go"
 
 	"errors"
 
@@ -48,6 +49,7 @@ func (this *VCache) GetString(key string) (string, error) {
 
 // GetByType empty cache will return error
 func (this *VCache) GetByType(key string, v interface{}) (err error) {
+	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	key = this.getKeyWithVersionNum(key)
 	str, err := get(key)
 	if err != nil {
