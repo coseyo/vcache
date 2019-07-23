@@ -89,18 +89,20 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100; i++ {
 		wg.Add(1)
-		go func() {
-			ok, err := cache.SLock("dasddsda", 100)
+		go func(i int) {
+			ok, err := cache.SLock("dadsdassa", 100)
 			if ok {
-				fmt.Println(i, ok, err, "========================", time.Now().Unix())
+				fmt.Println(i, ok, err, "bingo, I got this", time.Now().Unix())
 			}
 			wg.Done()
-		}()
+		}(i)
 	}
 
 	wg.Wait()
+
+	cache.UnSLock("dadsdassa")
 
 	log.Println("finish")
 }
