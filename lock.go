@@ -60,7 +60,10 @@ func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
 	defer RedisPool.CarefullyPut(rc, &err)
 
 	key = this.getKey(SLOCK_PREFIX + key)
-	ok, err = rc.Conn.Cmd("SET", key, 1, "EX", lockSecond, "NX").Bool()
+	// when is not locked, it will return string OK
+	if s := rc.Conn.Cmd("SET", key, 1, "EX", lockSecond, "NX").String(); s != "" {
+		ok = true
+	}
 	return
 }
 
