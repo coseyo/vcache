@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"log"
-	"sync"
-
 	"github.com/coseyo/vcache"
 )
 
 func main() {
-	err := vcache.InitRedis("tcp", "10.13.88.102:11311", 30, 900*time.Second)
+	err := vcache.InitRedis("tcp", "127.0.0.1:6379", 30, 900*time.Second, "test")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -66,6 +63,7 @@ func main() {
 	// and page 2 immediately, may be much more pages.
 	// And just execute the IncrVersionNum() method, the cache will be deprecated
 	cache.IncrVersionNum()
+	fmt.Println("after IncrVersionNum")
 
 	// because the version num was changed, the data is null
 	value, _ = cache.Get(keya)
@@ -87,22 +85,22 @@ func main() {
 
 	//lock use
 
-	var wg sync.WaitGroup
+	//var wg sync.WaitGroup
+	//
+	//for i := 0; i < 100; i++ {
+	//	wg.Add(1)
+	//	go func(i int) {
+	//		ok, err := cache.SLock("dadsdassa", 100)
+	//		if ok {
+	//			fmt.Println(i, ok, err, "bingo, I got this", time.Now().Unix())
+	//		}
+	//		wg.Done()
+	//	}(i)
+	//}
+	//
+	//wg.Wait()
+	//
+	//cache.UnSLock("dadsdassa")
 
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func(i int) {
-			ok, err := cache.SLock("dadsdassa", 100)
-			if ok {
-				fmt.Println(i, ok, err, "bingo, I got this", time.Now().Unix())
-			}
-			wg.Done()
-		}(i)
-	}
-
-	wg.Wait()
-
-	cache.UnSLock("dadsdassa")
-
-	log.Println("finish")
+	fmt.Println("finish")
 }
