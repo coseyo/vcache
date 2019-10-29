@@ -2,7 +2,6 @@ package vcache
 
 import (
 	"fmt"
-
 	"github.com/json-iterator/go"
 
 	"errors"
@@ -14,6 +13,10 @@ import (
 var (
 	GlobalKeyPrefix         string
 	DefaultVersionKeyExpire int = 7200
+)
+
+const (
+	ErrCacheEmpty = "CACHE_EMPTY"
 )
 
 type VCache struct {
@@ -56,10 +59,24 @@ func (this *VCache) GetByType(key string, v interface{}) (err error) {
 		return
 	}
 	if str == "" {
-		err = errors.New("CACHE_EMPTY")
+		err = errors.New(ErrCacheEmpty)
 		return
 	}
 	err = json.Unmarshal([]byte(str), v)
+	return
+}
+
+// GetByTypeWithExist return exist and error
+func (this *VCache) GetByTypeWithExist(key string, v interface{}) (exist bool, err error) {
+	err = this.GetByType(key, v)
+	if err == nil {
+		exist = true
+		return
+	}
+
+	if err.Error() == ErrCacheEmpty {
+		err = nil
+	}
 	return
 }
 
