@@ -61,9 +61,7 @@ func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
 
 	key = this.getKey(SLOCK_PREFIX + key)
 	// when is not locked, it will return string OK
-	if s := rc.Conn.Cmd("SET", key, 1, "EX", lockSecond, "NX").String(); s != "" {
-		ok = true
-	}
+	ok, _ = rc.Conn.Cmd("SET", key, 1, "EX", lockSecond, "NX").Bool()
 	return
 }
 
