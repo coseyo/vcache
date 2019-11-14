@@ -1,6 +1,7 @@
 package vcache
 
 import (
+	"sync"
 	"time"
 
 	"github.com/coseyo/radixpool"
@@ -12,12 +13,15 @@ const (
 
 var (
 	RedisPool *radixpool.Pool
+	doOnce    sync.Once
 )
 
 // init redis config
 func InitRedis(network, addr string, size int, clientTimeout time.Duration, password string) error {
 	var err error
-	RedisPool, err = radixpool.NewPool(network, addr, size, clientTimeout, password)
+	doOnce.Do(func() {
+		RedisPool, err = radixpool.NewPool(network, addr, size, clientTimeout, password)
+	})
 	return err
 }
 
