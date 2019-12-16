@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := vcache.InitRedis("tcp", "127.0.0.1:6379", 30, 900*time.Second, "t1est")
+	err := vcache.InitRedis("tcp", "127.0.0.1:6379", 30, 900*time.Second, "t1est", 1)
 	if err != nil {
 		fmt.Println(err)
 		return

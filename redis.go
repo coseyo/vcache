@@ -17,10 +17,10 @@ var (
 )
 
 // init redis config
-func InitRedis(network, addr string, size int, clientTimeout time.Duration, password string) error {
+func InitRedis(network, addr string, size int, clientTimeout time.Duration, password string, dbNum int) error {
 	var err error
 	doOnce.Do(func() {
-		RedisPool, err = radixpool.NewPool(network, addr, size, clientTimeout, password)
+		RedisPool, err = radixpool.NewPool(network, addr, size, clientTimeout, password, dbNum)
 	})
 	return err
 }
