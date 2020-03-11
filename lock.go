@@ -24,7 +24,7 @@ func (this *VCache) CLock(key string, lockSecond, expireSecond int) (ok bool, er
 		return
 	}
 
-	key = this.getKey(CLOCK_PREFIX + key)
+	key = this.GetKey(CLOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	expireTime := curTime + lockSecond + 1
 
@@ -59,7 +59,7 @@ func (this *VCache) SLock(key string, lockSecond int) (ok bool, err error) {
 	}
 	defer RedisPool.CarefullyPut(rc, &err)
 
-	key = this.getKey(SLOCK_PREFIX + key)
+	key = this.GetKey(SLOCK_PREFIX + key)
 	// when is not locked, it will return string OK
 	ok, _ = rc.Conn.Cmd("SET", key, 1, "EX", lockSecond, "NX").Bool()
 	return
@@ -73,7 +73,7 @@ func (this *VCache) UnCLock(key string) (err error) {
 	}
 	defer RedisPool.CarefullyPut(rc, &err)
 
-	key = this.getKey(CLOCK_PREFIX + key)
+	key = this.GetKey(CLOCK_PREFIX + key)
 	curTime := int(time.Now().Unix())
 	lockTime, err := rc.Conn.Cmd("GET", key).Int()
 	if err != nil || lockTime == 0 {
@@ -93,7 +93,7 @@ func (this *VCache) UnSLock(key string) (err error) {
 	}
 	defer RedisPool.CarefullyPut(rc, &err)
 
-	key = this.getKey(SLOCK_PREFIX + key)
+	key = this.GetKey(SLOCK_PREFIX + key)
 	err = rc.Conn.Cmd("DEL", key).Err
 	return
 }

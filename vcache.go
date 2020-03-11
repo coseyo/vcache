@@ -36,7 +36,7 @@ func New(keyPrefix string, expireSecond int) *VCache {
 
 // get cache data by key
 func (this *VCache) Get(key string) (interface{}, error) {
-	key = this.getKeyWithVersionNum(key)
+	key = this.GetKeyWithVersionNum(key)
 	data, err := get(key)
 	if data == "" {
 		return nil, err
@@ -46,14 +46,14 @@ func (this *VCache) Get(key string) (interface{}, error) {
 
 // get cache data string by key
 func (this *VCache) GetString(key string) (string, error) {
-	key = this.getKeyWithVersionNum(key)
+	key = this.GetKeyWithVersionNum(key)
 	return get(key)
 }
 
 // GetByType empty cache will return error
 func (this *VCache) GetByType(key string, v interface{}) (err error) {
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
-	key = this.getKeyWithVersionNum(key)
+	key = this.GetKeyWithVersionNum(key)
 	str, err := get(key)
 	if err != nil {
 		return
@@ -82,7 +82,7 @@ func (this *VCache) GetByTypeWithExist(key string, v interface{}) (exist bool, e
 
 // set cache data
 func (this *VCache) Set(key string, value interface{}) error {
-	key = this.getKeyWithVersionNum(key)
+	key = this.GetKeyWithVersionNum(key)
 	data, err := util.JsonEncode(value)
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (this *VCache) Set(key string, value interface{}) error {
 
 // set cache data with expire second
 func (this *VCache) SetWithExpire(key string, value interface{}, expireSecond int) error {
-	key = this.getKeyWithVersionNum(key)
+	key = this.GetKeyWithVersionNum(key)
 	data, err := util.JsonEncode(value)
 	if err != nil {
 		return err
@@ -102,22 +102,22 @@ func (this *VCache) SetWithExpire(key string, value interface{}, expireSecond in
 
 // delete cache data
 func (this *VCache) Del(key string) error {
-	return del(this.getKeyWithVersionNum(key))
+	return del(this.GetKeyWithVersionNum(key))
 }
 
 // incr cache data
 func (this *VCache) Incr(key string) (int, error) {
-	return incr(this.getKeyWithVersionNum(key))
+	return incr(this.GetKeyWithVersionNum(key))
 }
 
 // incr cache data
 func (this *VCache) Decr(key string) (int, error) {
-	return decr(this.getKeyWithVersionNum(key))
+	return decr(this.GetKeyWithVersionNum(key))
 }
 
 // set expireTime cache data
 func (this *VCache) Expire(key string, expireSecond int) error {
-	return expire(this.getKeyWithVersionNum(key), expireSecond)
+	return expire(this.GetKeyWithVersionNum(key), expireSecond)
 }
 
 // increase cache version num
@@ -155,12 +155,12 @@ func (this *VCache) GenerateKey(params map[string]interface{}, prefix ...string)
 	return key
 }
 
-func (this *VCache) getKey(key string) string {
+func (this *VCache) GetKey(key string) string {
 	return fmt.Sprintf("%s:%s:%s", GlobalKeyPrefix, this.KeyPrefix, util.MD5(key))
 }
 
-func (this *VCache) getKeyWithVersionNum(key string) string {
-	key = this.getKey(key)
+func (this *VCache) GetKeyWithVersionNum(key string) string {
+	key = this.GetKey(key)
 	if this.versionKey != "" {
 		key += ":" + this.getVersionNum()
 	}
