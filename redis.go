@@ -56,3 +56,7 @@ func incr(key string) (int, error) {
 func decr(key string) (int, error) {
 	return RedisPool.Cmd("DECR", key).Int()
 }
+
+func ttl(key string) (int, error) {
+	return RedisPool.Cmd("TTl", key).Int()
+}

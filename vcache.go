@@ -115,6 +115,10 @@ func (this *VCache) Decr(key string) (int, error) {
 	return decr(this.GetKeyWithVersionNum(key))
 }
 
+func (this *VCache) TTL(key string) (int, error) {
+	return ttl(this.GetKeyWithVersionNum(key))
+}
+
 // set expireTime cache data
 func (this *VCache) Expire(key string, expireSecond int) error {
 	return expire(this.GetKeyWithVersionNum(key), expireSecond)
@@ -122,7 +126,7 @@ func (this *VCache) Expire(key string, expireSecond int) error {
 
 // increase cache version num
 func (this *VCache) IncrVersionNum() error {
-	key := this.getKey(this.versionKey)
+	key := this.GetKey(this.versionKey)
 	_, err := incr(key)
 	if err == nil {
 		expire(key, DefaultVersionKeyExpire)
@@ -132,7 +136,7 @@ func (this *VCache) IncrVersionNum() error {
 
 // get the version num by version key
 func (this *VCache) getVersionNum() string {
-	versionNum, _ := get(this.getKey(this.versionKey))
+	versionNum, _ := get(this.GetKey(this.versionKey))
 	if versionNum == "" {
 		versionNum = "0"
 	}
